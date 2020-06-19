@@ -1,0 +1,2 @@
+rootProject.name='areasel'
+include ':app'
