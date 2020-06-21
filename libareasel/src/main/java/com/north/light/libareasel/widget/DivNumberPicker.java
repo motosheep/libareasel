@@ -2,11 +2,15 @@ package com.north.light.libareasel.widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
+import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+
+import com.north.light.libareasel.R;
 
 /**
  * author:li
@@ -50,6 +54,7 @@ public class DivNumberPicker extends NumberPicker {
         if (view instanceof EditText) {
             //这里修改显示字体的属性，主要修改颜色
             ((EditText) view).setTextSize(12);
+            ((EditText) view).setTextColor(getContext().getResources().getColor(R.color.color_000000));
         }
     }
 }

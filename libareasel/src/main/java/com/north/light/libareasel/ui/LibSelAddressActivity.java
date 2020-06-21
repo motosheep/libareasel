@@ -103,7 +103,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 //改变市，区的值
-//                Log.d(TAG, "province: " + picker.getValue());
+                Log.d(TAG, "province: " + picker.getValue());
 
                 mCurSelProvince = provinceStrArray[picker.getValue()];
                 mCityArray = mCityMap.get(mCurSelProvince).toArray(new String[mCityMap.get(mCurSelProvince).size()]);

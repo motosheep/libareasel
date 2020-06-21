@@ -7208,51 +7208,52 @@
            
     </province>
        
-    <province name="台湾省">
-               
-        <city name="台北市" number="32" />
-               
-        <city name="高雄市" number="" />
-               
-        <city name="基隆市" number="" />
-               
-        <city name="台中市" number="" />
-               
-        <city name="台南市" number="" />
-               
-        <city name="新竹市" number="" />
-               
-        <city name="嘉义市" number="" />
-               
-        <city name="新北市" number="" />
-               
-        <city name="宜兰县" number="" />
-               
-        <city name="桃园县" number="" />
-               
-        <city name="新竹县" number="" />
-               
-        <city name="苗栗县" number="" />
-               
-        <city name="彰化县" number="" />
-               
-        <city name="南投县" number="" />
-               
-        <city name="云林县" number="" />
-               
-        <city name="嘉义县" number="" />
-               
-        <city name="屏东县" number="" />
-               
-        <city name="台东县" number="" />
-               
-        <city name="花莲县" number="" />
-               
-        <city name="澎湖县" number="" />
-           
-    </province>
-       
-    <province name="香港特别行政自治区" />
-       
-    <province name="澳门特别行政自治区" />
+    <!--暂不支持港澳台-->
+<!--    <province name="台湾省">-->
+<!--               -->
+<!--        <city name="台北市" number="32" />-->
+<!--               -->
+<!--        <city name="高雄市" number="" />-->
+<!--               -->
+<!--        <city name="基隆市" number="" />-->
+<!--               -->
+<!--        <city name="台中市" number="" />-->
+<!--               -->
+<!--        <city name="台南市" number="" />-->
+<!--               -->
+<!--        <city name="新竹市" number="" />-->
+<!--               -->
+<!--        <city name="嘉义市" number="" />-->
+<!--               -->
+<!--        <city name="新北市" number="" />-->
+<!--               -->
+<!--        <city name="宜兰县" number="" />-->
+<!--               -->
+<!--        <city name="桃园县" number="" />-->
+<!--               -->
+<!--        <city name="新竹县" number="" />-->
+<!--               -->
+<!--        <city name="苗栗县" number="" />-->
+<!--               -->
+<!--        <city name="彰化县" number="" />-->
+<!--               -->
+<!--        <city name="南投县" number="" />-->
+<!--               -->
+<!--        <city name="云林县" number="" />-->
+<!--               -->
+<!--        <city name="嘉义县" number="" />-->
+<!--               -->
+<!--        <city name="屏东县" number="" />-->
+<!--               -->
+<!--        <city name="台东县" number="" />-->
+<!--               -->
+<!--        <city name="花莲县" number="" />-->
+<!--               -->
+<!--        <city name="澎湖县" number="" />-->
+<!--           -->
+<!--    </province>-->
+<!--       -->
+<!--    <province name="香港特别行政自治区" />-->
+<!--       -->
+<!--    <province name="澳门特别行政自治区" />-->
 </address>

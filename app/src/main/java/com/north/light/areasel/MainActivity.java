@@ -4,15 +4,11 @@ package com.north.light.areasel;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.north.light.libareasel.AddressMain;
-import com.north.light.libareasel.bean.AddressInfo;
 import com.north.light.libareasel.bean.AddressSelResult;
-import com.north.light.libareasel.model.AddressModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +16,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AddressMain.getInstance().show(this);
+        findViewById(R.id.buttondd).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddressMain.getInstance().show(MainActivity.this);
+            }
+        });
         AddressMain.getInstance().setOnAddressListener(new AddressMain.AddressSelInfoCallBack() {
             @Override
             public void Address(AddressSelResult result) {
