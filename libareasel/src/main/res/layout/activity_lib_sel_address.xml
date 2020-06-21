@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_4d000000">
+
+    <RelativeLayout
+        android:id="@+id/activity_lib_sel_address_title"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/color_FFFFFF"
+        app:layout_constraintBottom_toTopOf="@+id/activity_lib_sel_address_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <TextView
+            android:id="@+id/activity_lib_sel_address_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:text="取消"
+            android:textColor="@color/color_000000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/activity_lib_sel_address_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="10dp"
+            android:text="确定"
+            android:textColor="@color/color_000000"
+            android:textSize="14sp" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/activity_lib_sel_address_content"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_FFFFFF"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <com.north.light.libareasel.widget.DivNumberPicker
+            android:id="@+id/activity_lib_sel_address_content_province"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <com.north.light.libareasel.widget.DivNumberPicker
+            android:id="@+id/activity_lib_sel_address_content_city"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <com.north.light.libareasel.widget.DivNumberPicker
+            android:id="@+id/activity_lib_sel_address_content_district"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
