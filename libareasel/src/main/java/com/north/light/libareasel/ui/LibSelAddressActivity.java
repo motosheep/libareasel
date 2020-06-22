@@ -1,9 +1,11 @@
 package com.north.light.libareasel.ui;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
 
     private String[] mCityArray;
     private String[] mDistrictArray;
+    private String[] provinceStrArray;
 
     //当前选择的数据
     private String mCurSelProvince = "";
@@ -39,6 +42,10 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
 
     private TextView mCancel;//取消
     private TextView mConfirm;//确定
+
+    //动画
+    private boolean isUserPickerAnim = true;//是否启用picker动画
+    ValueAnimator mPickerAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +79,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         }
         //转换完成__设置数据
         //省份
-        final String[] provinceStrArray = mProvinceList.toArray(new String[mProvinceList.size()]);
+        provinceStrArray = mProvinceList.toArray(new String[mProvinceList.size()]);
         mProvincePicker.setDisplayedValues(provinceStrArray);
         mProvincePicker.setMaxValue(provinceStrArray.length - 1); //设置最大值，最大值是datas[3]
         mProvincePicker.setWrapSelectorWheel(true);
@@ -93,6 +100,10 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         mDistrictPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //禁止输入
         mCurSelDistrict = mDistrictArray[0];
 
+        initEvent();
+    }
+
+    private void initEvent() {
         //监听事件
         mProvincePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             /**
@@ -104,7 +115,6 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 //改变市，区的值
                 Log.d(TAG, "province: " + picker.getValue());
-
                 mCurSelProvince = provinceStrArray[picker.getValue()];
                 mCityArray = mCityMap.get(mCurSelProvince).toArray(new String[mCityMap.get(mCurSelProvince).size()]);
                 mCityPicker.setDisplayedValues(null);
@@ -168,7 +178,107 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
                 finish();
             }
         });
+
+
+        //滑动事件
+        mProvincePicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+            @Override
+            public void onScrollStateChange(NumberPicker view, int scrollState) {
+                Log.d(TAG, "mProvincePicker scrollState: " + scrollState);
+                if (scrollState == 1 && isUserPickerAnim)
+                    pickerAnim(1);
+            }
+        });
+        mCityPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+            @Override
+            public void onScrollStateChange(NumberPicker view, int scrollState) {
+                Log.d(TAG, "mCityPicker scrollState: " + scrollState);
+                if (scrollState == 1 && isUserPickerAnim)
+                    pickerAnim(2);
+            }
+        });
+        mDistrictPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+            @Override
+            public void onScrollStateChange(NumberPicker view, int scrollState) {
+                Log.d(TAG, "mDistrictPicker scrollState: " + scrollState);
+                if (scrollState == 1 && isUserPickerAnim)
+                    pickerAnim(3);
+            }
+        });
     }
 
+    /**
+     * 点击number picker实现的动画
+     *
+     * @param type 1省 2市 3区
+     */
+    private void pickerAnim(final int type) {
+        if (mPickerAnim != null) {
+//            mPickerAnim.cancel();
+            mPickerAnim.end();
+        }
+        mPickerAnim = ValueAnimator.ofFloat(0f, 1f);
+        mPickerAnim.setDuration(300);
+        mPickerAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float currentValue = (float) animation.getAnimatedValue();
+                Log.d("TAG", "cuurent value is " + currentValue);
+                if (type == 1) {
+                    //市 区 的weight渐变为1，省的渐变为2
+                    LinearLayout.LayoutParams mProvinceParams = (LinearLayout.LayoutParams) mProvincePicker.getLayoutParams();
+                    LinearLayout.LayoutParams mCityParams = (LinearLayout.LayoutParams) mCityPicker.getLayoutParams();
+                    LinearLayout.LayoutParams mDistrictParams = (LinearLayout.LayoutParams) mDistrictPicker.getLayoutParams();
+                    if (mProvinceParams.weight < 2) {
+                        mProvinceParams.weight = (mProvinceParams.weight + currentValue);
+                        mProvincePicker.setLayoutParams(mProvinceParams);
+                    }
+                    if (mCityParams.weight > 1) {
+                        mCityParams.weight = (mCityParams.weight - currentValue);
+                        mCityPicker.setLayoutParams(mCityParams);
+                    }
+                    if (mDistrictParams.weight > 1) {
+                        mDistrictParams.weight = (mDistrictParams.weight - currentValue);
+                        mDistrictPicker.setLayoutParams(mDistrictParams);
+                    }
+                } else if (type == 2) {
+                    //市 区 的weight渐变为1，省的渐变为2
+                    LinearLayout.LayoutParams mProvinceParams = (LinearLayout.LayoutParams) mProvincePicker.getLayoutParams();
+                    LinearLayout.LayoutParams mCityParams = (LinearLayout.LayoutParams) mCityPicker.getLayoutParams();
+                    LinearLayout.LayoutParams mDistrictParams = (LinearLayout.LayoutParams) mDistrictPicker.getLayoutParams();
+                    if (mCityParams.weight < 2) {
+                        mCityParams.weight = (mCityParams.weight + currentValue);
+                        mCityPicker.setLayoutParams(mCityParams);
+                    }
+                    if (mProvinceParams.weight > 1) {
+                        mProvinceParams.weight = (mProvinceParams.weight - currentValue);
+                        mProvincePicker.setLayoutParams(mProvinceParams);
+                    }
+                    if (mDistrictParams.weight > 1) {
+                        mDistrictParams.weight = (mDistrictParams.weight - currentValue);
+                        mDistrictPicker.setLayoutParams(mDistrictParams);
+                    }
+                } else if (type == 3) {
+                    //市 区 的weight渐变为1，省的渐变为2
+                    LinearLayout.LayoutParams mProvinceParams = (LinearLayout.LayoutParams) mProvincePicker.getLayoutParams();
+                    LinearLayout.LayoutParams mCityParams = (LinearLayout.LayoutParams) mCityPicker.getLayoutParams();
+                    LinearLayout.LayoutParams mDistrictParams = (LinearLayout.LayoutParams) mDistrictPicker.getLayoutParams();
+                    if (mDistrictParams.weight < 2) {
+                        mDistrictParams.weight = (mDistrictParams.weight + currentValue);
+                        mDistrictPicker.setLayoutParams(mDistrictParams);
+                    }
+                    if (mProvinceParams.weight > 1) {
+                        mProvinceParams.weight = (mProvinceParams.weight - currentValue);
+                        mProvincePicker.setLayoutParams(mProvinceParams);
+                    }
+                    if (mCityParams.weight > 1) {
+                        mCityParams.weight = (mCityParams.weight - currentValue);
+                        mCityPicker.setLayoutParams(mCityParams);
+                    }
+                }
+            }
+        });
+        mPickerAnim.start();
+    }
 
 }

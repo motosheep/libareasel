@@ -1,7 +1,9 @@
 package com.north.light.libareasel.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.AttributeSet;
@@ -11,6 +13,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.north.light.libareasel.R;
+
+import java.lang.reflect.Field;
 
 /**
  * author:li
@@ -55,6 +59,34 @@ public class DivNumberPicker extends NumberPicker {
             //这里修改显示字体的属性，主要修改颜色
             ((EditText) view).setTextSize(12);
             ((EditText) view).setTextColor(getContext().getResources().getColor(R.color.color_000000));
+        }
+    }
+
+    @Override
+    public void setDisplayedValues(String[] displayedValues) {
+        super.setDisplayedValues(displayedValues);
+        setNumberPickerDividerColor(this);
+    }
+
+    //设置分割线的颜色值
+    private void setNumberPickerDividerColor(NumberPicker numberPicker) {
+        NumberPicker picker = numberPicker;
+        Field[] pickerFields = NumberPicker.class.getDeclaredFields();
+        for (Field pf : pickerFields) {
+            if (pf.getName().equals("mSelectionDivider")) {
+                pf.setAccessible(true);
+                try {
+                    //设置分割线的颜色值 透明
+                    pf.set(picker, new ColorDrawable(this.getResources().getColor(R.color.color_e60078D7)));
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (Resources.NotFoundException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
         }
     }
 }
