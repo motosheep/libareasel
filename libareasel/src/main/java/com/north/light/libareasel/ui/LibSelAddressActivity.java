@@ -81,7 +81,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         //省份
         provinceStrArray = mProvinceList.toArray(new String[mProvinceList.size()]);
         mProvincePicker.setDisplayedValues(provinceStrArray);
-        mProvincePicker.setMaxValue(provinceStrArray.length - 1); //设置最大值，最大值是datas[3]
+        mProvincePicker.setMaxValue(provinceStrArray.length - 1); //设置最大值
         mProvincePicker.setWrapSelectorWheel(true);
         mProvincePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //禁止输入
         mCurSelProvince = provinceStrArray[0];
