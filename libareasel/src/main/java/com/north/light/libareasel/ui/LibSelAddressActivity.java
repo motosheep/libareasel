@@ -126,7 +126,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
                 mDistrictPicker.setDisplayedValues(null);
                 mDistrictPicker.setMaxValue(mDistrictArray.length - 1); //设置最大值
                 mDistrictPicker.setDisplayedValues(mDistrictArray);
-
+                mCurSelDistrict = mDistrictArray[0];
             }
         });
         mCityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -144,7 +144,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
                 mDistrictPicker.setDisplayedValues(null);
                 mDistrictPicker.setMaxValue(mDistrictArray.length - 1); //设置最大值
                 mDistrictPicker.setDisplayedValues(mDistrictArray);
-
+                mCurSelDistrict = mDistrictArray[0];
             }
         });
         mDistrictPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
