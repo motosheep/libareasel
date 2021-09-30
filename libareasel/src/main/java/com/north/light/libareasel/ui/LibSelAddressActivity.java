@@ -6,14 +6,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.north.light.libareasel.AddressMain;
 import com.north.light.libareasel.R;
+import com.north.light.libareasel.bean.AddressDetailInfo;
 import com.north.light.libareasel.bean.AddressInfo;
 import com.north.light.libareasel.bean.AddressSelResult;
+import com.north.light.libareasel.constant.IntentCode;
 import com.north.light.libareasel.model.AddressModel;
+import com.north.light.libareasel.widget.AreaNumberPickerView;
+import com.north.light.libareasel.widget.DivNumberPicker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,18 +25,18 @@ import java.util.Map;
 
 public class LibSelAddressActivity extends LibAddressBaseActivity {
     private static final String TAG = LibSelAddressActivity.class.getName();
-    private NumberPicker mProvincePicker;
-    private NumberPicker mCityPicker;
-    private NumberPicker mDistrictPicker;
+    private DivNumberPicker mProvincePicker;
+    private DivNumberPicker mCityPicker;
+    private DivNumberPicker mDistrictPicker;
 
     //数据集合
-    private List<String> mProvinceList = new ArrayList<>();
-    private Map<String, List<String>> mCityMap = new HashMap<>();
-    private Map<String, List<String>> mDistrictMap = new HashMap<>();
+    private ArrayList<AddressDetailInfo> mProvinceList = new ArrayList<>();
+    private Map<String, ArrayList<AddressDetailInfo>> mCityMap = new HashMap<>();
+    private Map<String, ArrayList<AddressDetailInfo>> mDistrictMap = new HashMap<>();
 
-    private String[] mCityArray;
-    private String[] mDistrictArray;
-    private String[] provinceStrArray;
+    private String[] mCityArray = new String[0];
+    private String[] mDistrictArray = new String[0];
+    private String[] provinceStrArray = new String[0];
 
     //当前选择的数据
     private String mCurSelProvince = "";
@@ -47,10 +50,21 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
     private boolean isUserPickerAnim = true;//是否启用picker动画
     ValueAnimator mPickerAnim;
 
+    /**
+     * 显示的类型
+     */
+    private int mShowType = 1;
+    /**
+     * 数据来源--1本地 2自定义
+     */
+    private int mSourceType = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lib_sel_address);
+        mShowType = getIntent().getIntExtra(IntentCode.TYPE_DATA, 1);
+        mSourceType = getIntent().getIntExtra(IntentCode.TYPE_SOURCE, 1);
         initView();
         getAddressData();
     }
@@ -64,40 +78,52 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         mDistrictPicker = findViewById(R.id.activity_lib_sel_address_content_district);
         mCancel = findViewById(R.id.activity_lib_sel_address_cancel);
         mConfirm = findViewById(R.id.activity_lib_sel_address_confirm);
+
+        if (mShowType == 2) {
+            mDistrictPicker.setVisibility(View.GONE);
+        }
     }
 
     /**
      * 获取地址数据
      */
     private void getAddressData() {
-        List<AddressInfo> result = AddressModel.getInstance().getAddressData(this, "area.xml");
+        List<AddressInfo> result = new ArrayList();
+        if (mSourceType == 1) {
+            result = AddressModel.getInstance().getAddressData(this, "area.xml");
+        } else if (mSourceType == 2) {
+            result = AddressModel.getInstance().getAddressRemote();
+        }
         //数据转换
+        mProvinceList.clear();
+        mCityMap.clear();
+        mDistrictMap.clear();
         for (AddressInfo cache : result) {
-            mProvinceList.add(cache.getProvince());
+            AddressDetailInfo provinceInfo = new AddressDetailInfo();
+            provinceInfo.setId(cache.getId());
+            provinceInfo.setName(cache.getName());
+            mProvinceList.add(provinceInfo);
             mCityMap.putAll(cache.getCityMap());
             mDistrictMap.putAll(cache.getDistrictMap());
         }
         //转换完成__设置数据
         //省份
-        provinceStrArray = mProvinceList.toArray(new String[mProvinceList.size()]);
-        mProvincePicker.setDisplayedValues(provinceStrArray);
+        provinceStrArray = trainAddressDetailInfoToStrArrays(mProvinceList);
+        mProvincePicker.refreshByNewDisplayedValues(provinceStrArray);
         mProvincePicker.setMaxValue(provinceStrArray.length - 1); //设置最大值
         mProvincePicker.setWrapSelectorWheel(true);
-        mProvincePicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //禁止输入
         mCurSelProvince = provinceStrArray[0];
         //城市
-        mCityArray = mCityMap.get(mCurSelProvince).toArray(new String[mCityMap.get(mCurSelProvince).size()]);
-        mCityPicker.setDisplayedValues(mCityArray);
+        mCityArray = trainAddressDetailInfoToStrArrays(mCityMap.get(mCurSelProvince));
+        mCityPicker.refreshByNewDisplayedValues(mCityArray);
         mCityPicker.setMaxValue(mCityArray.length - 1); //设置最大值
         mCityPicker.setWrapSelectorWheel(true);
-        mCityPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //禁止输入
         mCurSelCity = mCityArray[0];
         //市区
-        mDistrictArray = mDistrictMap.get(mCurSelCity).toArray(new String[mDistrictMap.get(mCurSelCity).size()]);
-        mDistrictPicker.setDisplayedValues(mDistrictArray);
+        mDistrictArray = trainAddressDetailInfoToStrArrays(mDistrictMap.get(mCurSelCity));
+        mDistrictPicker.refreshByNewDisplayedValues(mDistrictArray);
         mDistrictPicker.setMaxValue(mDistrictArray.length - 1); //设置最大值
         mDistrictPicker.setWrapSelectorWheel(true);
-        mDistrictPicker.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); //禁止输入
         mCurSelDistrict = mDistrictArray[0];
 
         initEvent();
@@ -105,59 +131,63 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
 
     private void initEvent() {
         //监听事件
-        mProvincePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+        mProvincePicker.setOnValueChangedListener(new AreaNumberPickerView.OnValueChangeListener() {
+
             /**
              * 每当选择的值改变时都会调用一次
              * @param oldVal 改变前的值
              * @param newVal 改变后的值
              */
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+            public void onValueChange(AreaNumberPickerView picker, int oldVal, int newVal) {
                 //改变市，区的值
                 Log.d(TAG, "province: " + picker.getValue());
                 mCurSelProvince = provinceStrArray[picker.getValue()];
-                mCityArray = mCityMap.get(mCurSelProvince).toArray(new String[mCityMap.get(mCurSelProvince).size()]);
-                mCityPicker.setDisplayedValues(null);
+                mCityArray = trainAddressDetailInfoToStrArrays(mCityMap.get(mCurSelProvince));
+                mCityPicker.refreshByNewDisplayedValues(mCityArray);
                 mCityPicker.setMaxValue(mCityArray.length - 1); //设置最大值
-                mCityPicker.setDisplayedValues(mCityArray);
 
                 mCurSelCity = mCityArray[0];
-                mDistrictArray = mDistrictMap.get(mCurSelCity).toArray(new String[mDistrictMap.get(mCurSelCity).size()]);
-                mDistrictPicker.setDisplayedValues(null);
+                mDistrictArray = trainAddressDetailInfoToStrArrays(mDistrictMap.get(mCurSelCity));
+                mDistrictPicker.refreshByNewDisplayedValues(mDistrictArray);
                 mDistrictPicker.setMaxValue(mDistrictArray.length - 1); //设置最大值
-                mDistrictPicker.setDisplayedValues(mDistrictArray);
                 mCurSelDistrict = mDistrictArray[0];
             }
+
+
         });
-        mCityPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+        mCityPicker.setOnValueChangedListener(new AreaNumberPickerView.OnValueChangeListener() {
+
             /**
              * 每当选择的值改变时都会调用一次
              * @param oldVal 改变前的值
              * @param newVal 改变后的值
              */
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                Log.d(TAG, "city: " + picker.getValue());
+            public void onValueChange(AreaNumberPickerView picker, int oldVal, int newVal) {
+                Log.d(TAG, "city: " + picker.getValue());
                 //获取当前位置,设置地区
                 mCurSelCity = mCityArray[picker.getValue()];
-                mDistrictArray = mDistrictMap.get(mCurSelCity).toArray(new String[mDistrictMap.get(mCurSelCity).size()]);
-                mDistrictPicker.setDisplayedValues(null);
+                mDistrictArray = trainAddressDetailInfoToStrArrays(mDistrictMap.get(mCurSelCity));
+                mDistrictPicker.refreshByNewDisplayedValues(mDistrictArray);
                 mDistrictPicker.setMaxValue(mDistrictArray.length - 1); //设置最大值
-                mDistrictPicker.setDisplayedValues(mDistrictArray);
                 mCurSelDistrict = mDistrictArray[0];
             }
+
         });
-        mDistrictPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+        mDistrictPicker.setOnValueChangedListener(new AreaNumberPickerView.OnValueChangeListener() {
+
+
             /**
              * 每当选择的值改变时都会调用一次
              * @param oldVal 改变前的值
              * @param newVal 改变后的值
              */
             @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-//                Log.d(TAG, "district: " + picker.getValue());
+            public void onValueChange(AreaNumberPickerView picker, int oldVal, int newVal) {
                 mCurSelDistrict = mDistrictArray[picker.getValue()];
             }
+
         });
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,43 +198,74 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(mCurSelProvince) || !TextUtils.isEmpty(mCurSelCity) || !TextUtils.isEmpty(mCurSelDistrict)) {
-                    AddressSelResult result = new AddressSelResult();
-                    result.setProvince(mCurSelProvince);
-                    result.setCity(mCurSelCity);
-                    result.setDistrict(mCurSelDistrict);
-                    AddressMain.getInstance().onSelData(result);
-                }
-                finish();
+                dealAddressWhenFinish();
             }
         });
 
 
         //滑动事件
-        mProvincePicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+        mProvincePicker.setOnScrollListener(new AreaNumberPickerView.OnScrollListener() {
             @Override
-            public void onScrollStateChange(NumberPicker view, int scrollState) {
+            public void onScrollStateChange(AreaNumberPickerView view, int scrollState) {
                 Log.d(TAG, "mProvincePicker scrollState: " + scrollState);
                 if (scrollState == 1 && isUserPickerAnim)
                     pickerAnim(1);
             }
         });
-        mCityPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+        mCityPicker.setOnScrollListener(new AreaNumberPickerView.OnScrollListener() {
             @Override
-            public void onScrollStateChange(NumberPicker view, int scrollState) {
+            public void onScrollStateChange(AreaNumberPickerView view, int scrollState) {
                 Log.d(TAG, "mCityPicker scrollState: " + scrollState);
                 if (scrollState == 1 && isUserPickerAnim)
                     pickerAnim(2);
             }
         });
-        mDistrictPicker.setOnScrollListener(new NumberPicker.OnScrollListener() {
+        mDistrictPicker.setOnScrollListener(new AreaNumberPickerView.OnScrollListener() {
             @Override
-            public void onScrollStateChange(NumberPicker view, int scrollState) {
+            public void onScrollStateChange(AreaNumberPickerView view, int scrollState) {
                 Log.d(TAG, "mDistrictPicker scrollState: " + scrollState);
                 if (scrollState == 1 && isUserPickerAnim)
                     pickerAnim(3);
             }
         });
+    }
+
+
+    /**
+     * 点击确认按钮，处理数据
+     * private ArrayList<AddressDetailInfo> mProvinceList = new ArrayList<>();
+     * private Map<String, ArrayList<AddressDetailInfo>> mCityMap = new HashMap<>();
+     * private Map<String, ArrayList<AddressDetailInfo>> mDistrictMap = new HashMap<>();
+     */
+    private void dealAddressWhenFinish() {
+        if (!TextUtils.isEmpty(mCurSelProvince) || !TextUtils.isEmpty(mCurSelCity) || !TextUtils.isEmpty(mCurSelDistrict)) {
+            AddressSelResult result = new AddressSelResult();
+            //省份
+            result.setProvince(mCurSelProvince);
+            for (AddressDetailInfo pInfo : mProvinceList) {
+                if (pInfo.getName().equals(mCurSelProvince)) {
+                    result.setProvinceId(pInfo.getId());
+                }
+            }
+            //城市
+            result.setCity(mCurSelCity);
+            ArrayList<AddressDetailInfo> cList = mCityMap.get(mCurSelProvince);
+            for (AddressDetailInfo cInfo : cList) {
+                if (cInfo.getName().equals(mCurSelCity)) {
+                    result.setCityId(cInfo.getId());
+                }
+            }
+            //地区
+            result.setDistrict(mCurSelDistrict);
+            ArrayList<AddressDetailInfo> dList = mDistrictMap.get(mCurSelCity);
+            for (AddressDetailInfo dInfo : dList) {
+                if (dInfo.getName().equals(mCurSelDistrict)) {
+                    result.setDistrictId(dInfo.getId());
+                }
+            }
+            AddressMain.getInstance().onSelData(result);
+        }
+        finish();
     }
 
     /**
@@ -214,7 +275,6 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
      */
     private void pickerAnim(final int type) {
         if (mPickerAnim != null) {
-//            mPickerAnim.cancel();
             mPickerAnim.end();
         }
         mPickerAnim = ValueAnimator.ofFloat(0f, 1f);
@@ -281,4 +341,15 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
         mPickerAnim.start();
     }
 
+
+    /**
+     * 传入AddressDetailInfo 集合转为 string[]
+     */
+    private String[] trainAddressDetailInfoToStrArrays(ArrayList<AddressDetailInfo> list) {
+        String[] result = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i).getName();
+        }
+        return result;
+    }
 }

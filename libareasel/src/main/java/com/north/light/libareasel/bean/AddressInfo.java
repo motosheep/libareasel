@@ -1,6 +1,7 @@
 package com.north.light.libareasel.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,35 +12,43 @@ import java.util.Map;
  * desc:地址解释对象
  */
 public class AddressInfo implements Serializable {
-
     //省
-    private String province = "";
+    private String id = "";
+    private String name = "";
     //市
-    private Map<String, List<String>> cityMap = new HashMap<>();
+    private Map<String, ArrayList<AddressDetailInfo>> cityMap = new HashMap<>();
     //区
-    private Map<String, List<String>> districtMap = new HashMap<>();
+    private Map<String, ArrayList<AddressDetailInfo>> districtMap = new HashMap<>();
 
-    public String getProvince() {
-        return province;
+    public String getId() {
+        return id;
     }
 
-    public void setProvince(String province) {
-        this.province = province;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public Map<String, List<String>> getCityMap() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, ArrayList<AddressDetailInfo>> getCityMap() {
         return cityMap;
     }
 
-    public void setCityMap(Map<String, List<String>> cityMap) {
+    public void setCityMap(Map<String, ArrayList<AddressDetailInfo>> cityMap) {
         this.cityMap = cityMap;
     }
 
-    public Map<String, List<String>> getDistrictMap() {
+    public Map<String, ArrayList<AddressDetailInfo>> getDistrictMap() {
         return districtMap;
     }
 
-    public void setDistrictMap(Map<String, List<String>> districtMap) {
+    public void setDistrictMap(Map<String, ArrayList<AddressDetailInfo>> districtMap) {
         this.districtMap = districtMap;
     }
 }

@@ -2,9 +2,10 @@ package com.north.light.areasel;
 
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.north.light.libareasel.AddressMain;

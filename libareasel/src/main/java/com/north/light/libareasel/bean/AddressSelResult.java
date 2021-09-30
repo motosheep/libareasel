@@ -9,8 +9,12 @@ import java.io.Serializable;
  */
 public class AddressSelResult implements Serializable {
     private String province;//省
+    private String provinceId;
     private String city;//市
+    private String cityId;
     private String district;//区
+    private String districtId;//区
+
 
     public String getProvince() {
         return province;
@@ -34,5 +38,29 @@ public class AddressSelResult implements Serializable {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public String getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(String provinceId) {
+        this.provinceId = provinceId;
+    }
+
+    public String getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(String districtId) {
+        this.districtId = districtId;
     }
 }

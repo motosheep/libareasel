@@ -2,12 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.north.light.libareasel">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application>
         <activity
             android:name=".ui.LibSelAddressActivity"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar.TranslucentDecor" />
+            android:theme="@style/AddressAppTranslucent" />
     </application>
-
-
 
 </manifest>

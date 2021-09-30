@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.north.light.libareasel.bean.AddressInfo;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -26,8 +26,10 @@ public class AddressModel {
         return SingleHolder.mInstance;
     }
 
+    private List<AddressInfo> removeDate = new ArrayList<>();
+
     /**
-     * 获取地址数据
+     * 获取地址数据--本地数据
      * assets/area.xml
      */
     public List<AddressInfo> getAddressData(Context context, String path) {
@@ -41,6 +43,24 @@ public class AddressModel {
         return null;
     }
 
+    /**
+     * 获取数据--传入数据
+     */
+    public List<AddressInfo> getAddressRemote() {
+        return removeDate;
+    }
+
+    /**
+     * 设置数据--若使用远程数据，必须先调用
+     */
+    public void setRemoteData(List<AddressInfo> data) {
+        try {
+            removeDate.clear();
+            removeDate.addAll(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 【SAX解析XML文件】

@@ -2,6 +2,7 @@ package com.north.light.libareasel.model;
 
 import android.text.TextUtils;
 
+import com.north.light.libareasel.bean.AddressDetailInfo;
 import com.north.light.libareasel.bean.AddressInfo;
 
 import org.xml.sax.Attributes;
@@ -9,9 +10,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * author:li
@@ -43,17 +42,24 @@ public class AddressSaxHandler extends DefaultHandler {
         super.startElement(uri, localName, qName, attributes);
         if (localName.equals("province")) {
             mCurrentInfo = new AddressInfo();
-            mCurrentInfo.setProvince(attributes.getValue("name"));
-            mCurrentProvince = mCurrentInfo.getProvince();
+            mCurrentInfo.setName(attributes.getValue("name"));
+            mCurrentInfo.setId("0");
+            mCurrentProvince = mCurrentInfo.getName();
         } else if (localName.equals("city")) {
             mCurrentCity = attributes.getValue("name");
-            List<String> cityList = new ArrayList<>();
+            ArrayList<AddressDetailInfo> cityList = new ArrayList<>();
             if (mCurrentInfo.getCityMap().get(mCurrentProvince) == null) {
-                cityList.add(mCurrentCity);
+                AddressDetailInfo city = new AddressDetailInfo();
+                city.setName(mCurrentCity);
+                city.setId("0");
+                cityList.add(city);
                 mCurrentInfo.getCityMap().put(mCurrentProvince, cityList);
             } else {
                 cityList = mCurrentInfo.getCityMap().get(mCurrentProvince);
-                cityList.add(mCurrentCity);
+                AddressDetailInfo city = new AddressDetailInfo();
+                city.setName(mCurrentCity);
+                city.setId("0");
+                cityList.add(city);
                 mCurrentInfo.getCityMap().put(mCurrentProvince, cityList);
             }
         }
@@ -67,13 +73,19 @@ public class AddressSaxHandler extends DefaultHandler {
         if (!TextUtils.isEmpty(mTagName)) {
             String data = new String(ch, start, length);
             if (mTagName.equals("district")) {
-                List<String> districtList = new ArrayList<>();
+                ArrayList<AddressDetailInfo> districtList = new ArrayList<>();
                 if (mCurrentInfo.getDistrictMap().get(mCurrentCity) == null) {
-                    districtList.add(data);
+                    AddressDetailInfo dist = new AddressDetailInfo();
+                    dist.setName(data);
+                    dist.setId("0");
+                    districtList.add(dist);
                     mCurrentInfo.getDistrictMap().put(mCurrentCity, districtList);
                 } else {
                     districtList = mCurrentInfo.getDistrictMap().get(mCurrentCity);
-                    districtList.add(data);
+                    AddressDetailInfo dist = new AddressDetailInfo();
+                    dist.setName(data);
+                    dist.setId("0");
+                    districtList.add(dist);
                     mCurrentInfo.getDistrictMap().put(mCurrentCity, districtList);
                 }
             }
