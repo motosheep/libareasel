@@ -11,6 +11,8 @@ import com.google.gson.Gson;
 import com.north.light.libareasel.AddressMain;
 import com.north.light.libareasel.bean.AddressSelResult;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -20,7 +22,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.buttondd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddressMain.getInstance().show(MainActivity.this);
+//                AddressMain.getInstance().show(MainActivity.this);
+                AddressMain.getInstance().showFull(MainActivity.this, 1, new ArrayList());
             }
         });
         AddressMain.getInstance().setOnAddressListener(new AddressMain.AddressSelInfoCallBack() {

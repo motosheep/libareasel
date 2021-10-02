@@ -30,7 +30,6 @@ public class AddressModel {
 
     /**
      * 获取地址数据--本地数据
-     * assets/area.xml
      */
     public List<AddressInfo> getAddressData(Context context, String path) {
         try {

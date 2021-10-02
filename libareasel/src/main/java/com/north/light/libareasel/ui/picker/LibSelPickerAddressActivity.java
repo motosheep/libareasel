@@ -1,4 +1,4 @@
-package com.north.light.libareasel.ui;
+package com.north.light.libareasel.ui.picker;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;
@@ -13,8 +13,10 @@ import com.north.light.libareasel.R;
 import com.north.light.libareasel.bean.AddressDetailInfo;
 import com.north.light.libareasel.bean.AddressInfo;
 import com.north.light.libareasel.bean.AddressSelResult;
-import com.north.light.libareasel.constant.IntentCode;
+import com.north.light.libareasel.constant.AddressConstant;
+import com.north.light.libareasel.constant.AddressIntentCode;
 import com.north.light.libareasel.model.AddressModel;
+import com.north.light.libareasel.ui.base.LibAddressBaseActivity;
 import com.north.light.libareasel.widget.AreaNumberPickerView;
 import com.north.light.libareasel.widget.DivNumberPicker;
 
@@ -23,8 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LibSelAddressActivity extends LibAddressBaseActivity {
-    private static final String TAG = LibSelAddressActivity.class.getName();
+public class LibSelPickerAddressActivity extends LibAddressBaseActivity {
+    private static final String TAG = LibSelPickerAddressActivity.class.getName();
     private DivNumberPicker mProvincePicker;
     private DivNumberPicker mCityPicker;
     private DivNumberPicker mDistrictPicker;
@@ -62,9 +64,9 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lib_sel_address);
-        mShowType = getIntent().getIntExtra(IntentCode.TYPE_DATA, 1);
-        mSourceType = getIntent().getIntExtra(IntentCode.TYPE_SOURCE, 1);
+        setContentView(R.layout.activity_lib_sel_picker_address);
+        mShowType = getIntent().getIntExtra(AddressIntentCode.TYPE_PICKER_DATA, 1);
+        mSourceType = getIntent().getIntExtra(AddressIntentCode.TYPE_PICKER_SOURCE, 1);
         initView();
         getAddressData();
     }
@@ -90,7 +92,7 @@ public class LibSelAddressActivity extends LibAddressBaseActivity {
     private void getAddressData() {
         List<AddressInfo> result = new ArrayList();
         if (mSourceType == 1) {
-            result = AddressModel.getInstance().getAddressData(this, "area.xml");
+            result = AddressModel.getInstance().getAddressData(this, AddressConstant.DATA_XML_NAME);
         } else if (mSourceType == 2) {
             result = AddressModel.getInstance().getAddressRemote();
         }

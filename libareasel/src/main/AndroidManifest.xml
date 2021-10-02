@@ -7,8 +7,11 @@
 
     <application>
         <activity
-            android:name=".ui.LibSelAddressActivity"
+            android:name=".ui.picker.LibSelPickerAddressActivity"
             android:theme="@style/AddressAppTranslucent" />
+        <activity
+            android:name=".ui.full.LibSelFullAddressActivity"
+            android:theme="@style/AddressApp" />
     </application>
 
 </manifest>

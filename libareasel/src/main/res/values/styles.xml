@@ -1,10 +1,17 @@
 <resources>
 
-
     <style name="AddressAppTranslucent" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@color/color_00000000</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="AddressApp" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/color_FFFFFF</item>
+        <item name="colorPrimaryDark">@color/color_FFFFFF</item>
+        <item name="colorAccent">@color/color_FFFFFF</item>
+        <item name="android:screenOrientation">portrait</item>
     </style>
 </resources>

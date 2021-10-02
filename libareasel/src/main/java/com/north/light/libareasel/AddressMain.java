@@ -6,9 +6,10 @@ import android.content.Intent;
 import com.north.light.libareasel.bean.AddressDetailInfo;
 import com.north.light.libareasel.bean.AddressInfo;
 import com.north.light.libareasel.bean.AddressSelResult;
-import com.north.light.libareasel.constant.IntentCode;
+import com.north.light.libareasel.constant.AddressIntentCode;
 import com.north.light.libareasel.model.AddressModel;
-import com.north.light.libareasel.ui.LibSelAddressActivity;
+import com.north.light.libareasel.ui.full.LibSelFullAddressActivity;
+import com.north.light.libareasel.ui.picker.LibSelPickerAddressActivity;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -46,27 +47,40 @@ public class AddressMain implements Serializable {
     }
 
     /**
-     * 启动地址选择
+     * 启动地址选择---------picker模式
      * 启动地址选择activity,start for result
      */
     public void show(Activity activity) {
         show(activity, 1);
     }
 
+    /**
+     * 启动地址选择---------picker模式
+     */
     public void show(Activity activity, int type) {
-        Intent intent = new Intent(activity, LibSelAddressActivity.class);
-        intent.putExtra(IntentCode.TYPE_DATA, type);
+        Intent intent = new Intent(activity, LibSelPickerAddressActivity.class);
+        intent.putExtra(AddressIntentCode.TYPE_PICKER_DATA, type);
         activity.startActivity(intent);
     }
 
     /**
-     * @param source 数据来源:1本地 2传入
+     * @param source 数据来源:1本地 2传入---------picker模式
      */
     public void show(Activity activity, int type, List<AddressInfo> source) {
         AddressModel.getInstance().setRemoteData(source);
-        Intent intent = new Intent(activity, LibSelAddressActivity.class);
-        intent.putExtra(IntentCode.TYPE_DATA, type);
-        intent.putExtra(IntentCode.TYPE_SOURCE, 2);
+        Intent intent = new Intent(activity, LibSelPickerAddressActivity.class);
+        intent.putExtra(AddressIntentCode.TYPE_PICKER_DATA, type);
+        intent.putExtra(AddressIntentCode.TYPE_PICKER_SOURCE, 2);
+        activity.startActivity(intent);
+    }
+
+    /**
+     * 启动地址选择---------全屏模式---数据源为远程数据的时候，参数source必传
+     */
+    public void showFull(Activity activity, int type, List<AddressInfo> source) {
+        AddressModel.getInstance().setRemoteData(source);
+        Intent intent = new Intent(activity, LibSelFullAddressActivity.class);
+        intent.putExtra(AddressIntentCode.TYPE_FULL_SOURCE, type);
         activity.startActivity(intent);
     }
 

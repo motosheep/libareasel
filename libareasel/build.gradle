@@ -19,6 +19,11 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
 }
 
 dependencies {
@@ -27,6 +32,10 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation "com.android.support:design:28.+"
     implementation "com.android.support:recyclerview-v7:28.+"
+    implementation files('src\\main\\libs\\pinyin4j-2.5.0.jar')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 //    implementation "com.google.code.gson:gson:2.8.6"
     testImplementation 'junit:junit:4.12'
 
