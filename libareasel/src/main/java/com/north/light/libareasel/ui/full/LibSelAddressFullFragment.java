@@ -26,6 +26,7 @@ import com.north.light.libareasel.bean.local.AddressLocalFullItemInfo;
 import com.north.light.libareasel.constant.AddressConstant;
 import com.north.light.libareasel.model.AddressModel;
 import com.north.light.libareasel.utils.AddressChineseUtils;
+import com.north.light.libareasel.utils.AddressThreadManager;
 import com.north.light.libareasel.widget.AddressSlideBar;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import java.util.List;
  */
 public class LibSelAddressFullFragment extends Fragment {
     public static final String CODE_REQUEST = "CODE_REQUEST";
+    public static final String TAG = LibSelAddressFullFragment.class.getSimpleName();
     //数据来源:1本地 2远程
     private int mType = 1;
     /**
@@ -78,6 +80,9 @@ public class LibSelAddressFullFragment extends Fragment {
     private AddressSlideBar mSlide;
     private TextView mSlideTips;
 
+    //线程
+    private IoThread mIoThread;
+
 
     /**
      * 显示模式：0默认模式
@@ -97,6 +102,12 @@ public class LibSelAddressFullFragment extends Fragment {
             mRootView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_lib_sel_full_address, container, false);
         }
         return mRootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        AddressThreadManager.getInstance().closeCacheExecutors(TAG);
+        super.onDestroyView();
     }
 
     @Override
@@ -122,7 +133,6 @@ public class LibSelAddressFullFragment extends Fragment {
         mFullAdapter = new AddressFullAdapter(requireActivity());
         mFullRecy.setAdapter(mFullAdapter);
         initData();
-        mFullAdapter.setData(mInfoList);
     }
 
     private void initEvent() {
@@ -132,7 +142,7 @@ public class LibSelAddressFullFragment extends Fragment {
                 mSlideTips.setVisibility((touch) ? View.VISIBLE : View.GONE);
                 mSlideTips.setText(letter);
                 //滑动到recyclerview指定位置
-                mFullAdapter.scrollToTips(letter,mFullRecy);
+                mFullAdapter.scrollToTips(letter, mFullRecy);
             }
         });
         mInputET.addTextChangedListener(new TextWatcher() {
@@ -161,7 +171,7 @@ public class LibSelAddressFullFragment extends Fragment {
         mFullAdapter.setOnClickListener(new AddressFullAdapter.OnClickListener() {
             @Override
             public void Select(int sourceType, AddressDetailInfo info) {
-                setCallbackData(sourceType,info);
+                setCallbackData(sourceType, info);
             }
         });
     }
@@ -169,7 +179,7 @@ public class LibSelAddressFullFragment extends Fragment {
     /**
      * 设置返回数据
      */
-    private void setCallbackData(int sourceType,AddressDetailInfo info) {
+    private void setCallbackData(int sourceType, AddressDetailInfo info) {
         if (sourceType == 1) {
             //省份
             AddressSelResult result = new AddressSelResult();
@@ -227,51 +237,76 @@ public class LibSelAddressFullFragment extends Fragment {
     }
 
 
+    //线程-----------------------------------------------------------------------------------
+
+
+    private class IoThread extends Thread {
+        @Override
+        public void run() {
+            super.run();
+        }
+    }
+
+
     //数据处理-----------------------------------------------------------------------------------
 
     /**
      * 初始化数据
      */
     private void initData() {
-        //初始化数据
-        recCityList.add("北京");
-        recCityList.add("上海");
-        recCityList.add("深圳");
-        recCityList.add("广州");
-        List<AddressInfo> result = new ArrayList();
-        if (mType == 1) {
-            result = AddressModel.getInstance().getAddressData(requireActivity(), AddressConstant.DATA_XML_NAME);
-        } else if (mType == 2) {
-            result = AddressModel.getInstance().getAddressRemote();
-        }
-        mOrgData.clear();
-        mOrgData.addAll(result);
-        for (AddressInfo addressInfo : result) {
-            //省
-            addAllAddressInfo(addressInfo.getId(), addressInfo.getName(), 1);
-            for (String city : addressInfo.getCityMap().keySet()) {
-                List<AddressDetailInfo> cityList = addressInfo.getCityMap().get(city);
-                //市
-                if (cityList != null && cityList.size() != 0) {
-                    for (AddressDetailInfo cityDetail : cityList) {
-                        addAllAddressInfo(cityDetail.getId(), cityDetail.getName(), 2);
-                        //显示数据设置
-                        addShowAddressInfo(cityDetail.getId(), cityDetail.getName(), 2);
-                        addCityToProvinceMap(cityDetail.getName(), addressInfo.getId(), addressInfo.getName());
-                        //区
-                        List<AddressDetailInfo> districtList = addressInfo.getDistrictMap().get(cityDetail.getName());
-                        if (districtList != null && districtList.size() != 0) {
-                            for (AddressDetailInfo districtDetail : districtList) {
-                                addAllAddressInfo(districtDetail.getId(), districtDetail.getName(), 3);
-                                addDistrictToCityMap(districtDetail.getName(), cityDetail.getId(), cityDetail.getName());
+        AddressThreadManager.getInstance().getCacheExecutors(TAG).execute(new Runnable() {
+            @Override
+            public void run() {
+                //初始化数据
+                recCityList.add("北京");
+                recCityList.add("上海");
+                recCityList.add("深圳");
+                recCityList.add("广州");
+                List<AddressInfo> result = new ArrayList();
+                if (mType == 1) {
+                    result = AddressModel.getInstance().getAddressData(requireActivity(), AddressConstant.DATA_XML_NAME);
+                } else if (mType == 2) {
+                    result = AddressModel.getInstance().getAddressRemote();
+                }
+                mOrgData.clear();
+                mOrgData.addAll(result);
+                for (AddressInfo addressInfo : result) {
+                    //省
+                    addAllAddressInfo(addressInfo.getId(), addressInfo.getName(), 1);
+                    for (String city : addressInfo.getCityMap().keySet()) {
+                        List<AddressDetailInfo> cityList = addressInfo.getCityMap().get(city);
+                        //市
+                        if (cityList != null && cityList.size() != 0) {
+                            for (AddressDetailInfo cityDetail : cityList) {
+                                addAllAddressInfo(cityDetail.getId(), cityDetail.getName(), 2);
+                                //显示数据设置
+                                addShowAddressInfo(cityDetail.getId(), cityDetail.getName(), 2);
+                                addCityToProvinceMap(cityDetail.getName(), addressInfo.getId(), addressInfo.getName());
+                                //区
+                                List<AddressDetailInfo> districtList = addressInfo.getDistrictMap().get(cityDetail.getName());
+                                if (districtList != null && districtList.size() != 0) {
+                                    for (AddressDetailInfo districtDetail : districtList) {
+                                        addAllAddressInfo(districtDetail.getId(), districtDetail.getName(), 3);
+                                        addDistrictToCityMap(districtDetail.getName(), cityDetail.getId(), cityDetail.getName());
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                //整合数据
+                sortData();
+                if(getActivity()!=null){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mFullAdapter.setData(mInfoList);
+                        }
+                    });
+                }
+
             }
-        }
-        //整合数据
-        sortData();
+        });
     }
 
     private void addCityToProvinceMap(String cityName, String id, String name) {

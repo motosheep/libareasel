@@ -177,7 +177,7 @@ public class AddressFullAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         for (int i = 0; i < mData.size() - 1; i++) {
             AddressLocalFullItemInfo info = mData.get(i);
             if (info.getType() == 3 && info.getTitle().equals(letter)) {
-                mFullRecy.smoothScrollToPosition(i);
+                mFullRecy.scrollToPosition(i);
                 break;
             }
         }
